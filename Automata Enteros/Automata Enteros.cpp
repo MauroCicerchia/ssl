@@ -14,6 +14,8 @@ int transiciones[7][7] = 	{  //0  x  nD nO nH \0 otro
 						/*6*/	{6, 6, 6, 6, 6, 6, 6}
 							};
 							
+void escribirNumero(char*, FILE*);
+int automata(char*);
 void transicion(int&, char);
 int obtenerColumna(int, char);
 int estadoSegunNumero(int, char);
@@ -21,8 +23,6 @@ bool esDecimal(char);
 bool esOctal(char);
 bool esHexa(char);
 bool esLetraHexa(char);
-void escribirNumero(char*, FILE*);
-int automata(char*);
 int toDec(char);
 int toOct(char);
 int toHexa(char);
@@ -34,23 +34,55 @@ int main() {
 	char s[128];
 	char *num;
 	
-	//123#012#0x123#ABC
-	//843#0123#0xee13#CBA
-	
-	while(fgets(s, sizeof(s), fin)) {
-		
+	while(fgets(s, sizeof(s), fin)) {		
 		num = strtok(s, "#\n");
-		//cout << num << endl;
 		escribirNumero(num, fout);
 		
 		while(num = strtok(NULL, "#\n")) {
-			//cout << num << endl;
 			escribirNumero(num, fout);
 		}
-		
 	}
+	printf("\nArchivo escrito satisfactoriamente.");
+	fclose(fin);
+	fclose(fout);
+}
+
+void escribirNumero(char *num, FILE *f) {	
+	int numFinal = automata(num);
+	if(numFinal) {
+		printf("%s	--> %d\n", num, numFinal);
+		fwrite(&numFinal, sizeof(numFinal), 1, f);
+	}
+}
+
+int automata(char *s) {
+	int estado = 0, num = 0;
 	
-	cout << "OK";
+	for(int i = 0; i < strlen(s) + 1; i++) {
+		//printf("%d-->(%c)-->", estado, s[i]);
+		transicion(estado, s[i]);
+		//printf("%d\n", estado);
+		
+		if(estado == 2 && s[i] != 'x') {
+			num = num * 16 + toHexa(s[i]);
+		}
+		
+		if(estado == 3) {
+			num = num * 8 + toOct(s[i]);
+		}
+		
+		if(estado == 4) {
+			num = num * 10 + toDec(s[i]);
+		}
+		
+		if(estado == 5) {
+			return num;
+		}
+		
+		if(estado == 6) {
+			return 0;
+		}
+	}
 }
 
 void transicion(int &estado, char simbolo) {
@@ -95,53 +127,17 @@ bool esLetraHexa(char simbolo) {
 	return simbolo >= 'a' && simbolo <= 'f';
 }
 
-void escribirNumero(char *num, FILE *f) {	
-	int numFinal = automata(num);
-	if(numFinal) {
-		printf("%s --> %d\n", num, numFinal);
-		fwrite(&numFinal, sizeof(numFinal), 1, f);
-	}
-}
-
-int automata(char *s) {
-	int estado = 0, num = 0;
-	
-	for(int i = 0; i < strlen(s) + 1; i++) {
-		transicion(estado, s[i]);
-		
-		if(estado == 2 && s[i] != 'x') {
-			num = num * 16 + toHexa(s[i]);
-		}
-		
-		if(estado == 3) {
-			num = num * 8 + toOct(s[i]);
-		}
-		
-		if(estado == 4) {
-			num = num * 10 + toDec(s[i]);
-		}
-		
-		if(estado == 5) {
-			return num;
-		}
-		
-		if(estado == 6) {
-			return 0;
-		}
-	}
-}
-
 int toDec(char c) {
 	return c - '0';
 }
 
 int toOct(char c) {
-	return c - '0';
+	return toDec(c);
 }
 
 int toHexa(char c) {
 	if(esDecimal(c))
-		return c - '0';
+		return toDec(c);
 	else
 		return tolower(c) - 'a' + 10;
 }

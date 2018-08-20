@@ -59,9 +59,7 @@ int automata(char *s) {
 	int estado = 0, num = 0;
 	
 	for(int i = 0; i < strlen(s) + 1; i++) {
-		//printf("%d-->(%c)-->", estado, s[i]);
 		transicion(estado, s[i]);
-		//printf("%d\n", estado);
 		
 		if(estado == 2 && s[i] != 'x') {
 			num = num * 16 + toHexa(s[i]);

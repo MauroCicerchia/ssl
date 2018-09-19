@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 typedef enum{INICIO, FIN, LEER, ESCRIBIR, ID, CONST, ASIGNACION, PARENIZQ, PARENDER, COMA, PUNTOYCOMA, SUMA, RESTA, ERROR} TOKEN;
 
@@ -26,15 +27,21 @@ char *simbolos[4][2] = 	{
 							{"leer", "PR"}
 						};
 						
-char buffer[256];
+char buffer[128] = "";
+int buffLen = 0;
 
-TOKEN scanner(char*);
+FILE * fin;
+
+TOKEN scanner();
 void transicion(int&, char);
 bool esLetra(char);
 int obtenerColumna(char);
 TOKEN esReservada(char*);
+
 void agregarCaracter(char);
-void limpiarBuffer();
+void devolverCaracter();
+void vaciarBuffer();
+
 void objetivo();
 void programa();
 void listaDeSentencias();
@@ -44,21 +51,41 @@ void listaDeExpresiones();
 void expresion();
 void primaria();
 
-int main() {
-	printf("buffer: %s\n\n", buffer);
+int main(int argc, char* argv[]) {
+	if(argc == 1) {
+		printf("Missing arg.\n");
+		return -1;
+	}
 	
-	scanner("Program.mi");
+	if(argc > 2) {
+		printf("Too many args.\n");
+		return -1;
+	}
+	
+	char nombreArchivo[22];
+	strcpy(nombreArchivo, argv[1]);
+	int largo = strlen(nombreArchivo);
+	if(nombreArchivo[largo-1] != 'm' || nombreArchivo[largo-2] != '.') {
+		printf("Extension invalida.\n");
+		return -1;
+	}
+	
+	fin = fopen(nombreArchivo, "rt");
+	
+	while(!feof(fin)) {
+		scanner();
+	}
 }
 
 void objetivo() {
-	programa();
-	match(EOF);
+	/*programa();
+	match(EOF);*/
 }
 
 void programa() {
-	match(INICIO);
+	/*match(INICIO);
 	listaDeSentencias();
-	match(FIN);
+	match(FIN);*/
 }
 
 void listaDeSentencias() {
@@ -68,68 +95,77 @@ void listaDeSentencias() {
 	}*/
 }
 
-TOKEN scanner(char * file) {
+TOKEN scanner() {
 	int estado = 0;
-	FILE * f = fopen(file, "rt");
-	char c = getc(f);
+	char c = getc(fin);
 	
-	while(!feof(f)) {
+	while(!feof(fin)) {
+		agregarCaracter(c);
 		transicion(estado, c);
 		
 		if(estado == 2) {
-			ungetc(c, f);
+			devolverCaracter();
 			printf("<ID>");
 			estado = 0;
-			//return ID;
+			vaciarBuffer();
+			return ID;
 		}
 		
 		if(estado == 4) {
-			ungetc(c, f);
+			devolverCaracter();
 			printf("<CONST>");
 			estado = 0;
-			//return CONST;
+			vaciarBuffer();
+			return CONST;
 		}
 		
 		if(estado == 5) {
 			printf("<PYC>");
 			estado = 0;
-			//return PUNTOYCOMA;
+			vaciarBuffer();
+			return PUNTOYCOMA;
 		}
 		
 		if(estado == 6) {
 			printf("<COMA>");
 			estado = 0;
-			//return COMA;
+			vaciarBuffer();
+			return COMA;
 		}
 		
 		if(estado == 7) {
 			printf("<PARENIZQ>");
 			estado = 0;
-			//return PARENIZQ;
+			vaciarBuffer();
+			return PARENIZQ;
 		}
 		
 		if(estado == 8) {
 			printf("<PARENDER>");
 			estado = 0;
-			//return PARENDER;
+			vaciarBuffer();
+			return PARENDER;
 		}
 		
 		if(estado == 9) {
 			printf("<SUMA>");
 			estado = 0;
-			//return SUMA;
+			vaciarBuffer();
+			return SUMA;
 		}
 		
 		if(estado == 10) {
 			printf("<RESTA>");
 			estado = 0;
-			//return RESTA;
+			vaciarBuffer();
+			return RESTA;
 		}
 		
 		if(estado == 12) {
 			printf("<ASIGNACION>");
 			estado = 0;
-			//return ASIGNACION;
+			vaciarBuffer();
+			return ASIGNACION;
 		}
 		
 		if(estado == 13) {
@@ -139,7 +175,7 @@ TOKEN scanner(char * file) {
 		}
 		if(c == '\n')
 			printf("\n");
-		c = getc(f);
+		c = getc(fin);
 	}
 	return ERROR;
 }
@@ -187,17 +223,17 @@ int obtenerColumna(char simbolo) {
 }
 
 void agregarCaracter(char c) {
-	char *p = buffer;
-	while(*p != '\0') {
-		p++;
-	}
-	
-	*p = c;
-	*(p+1) = '\0';
+	buffer[buffLen] = c;
+	buffLen++;
+	buffer[buffLen] = '\0';
 }
 
-void limpiarBuffer() {
+void devolverCaracter() {
+	ungetc(buffer[buffLen-1], fin);
+	buffer[buffLen-1] = '\0';
+	buffLen--;
+}
+
+void vaciarBuffer() {
 	buffer[0] = '\0';
 }
-
-

@@ -10,6 +10,7 @@ int buscar(char*);
 int declarar(char*);
 
 FILE *yyin;
+const int MAXVAR = 128;
 int VARCOUNT = 0;
 
 typedef struct{
@@ -70,12 +71,13 @@ int buscar(char* var)
 //Agrega la nueva variable a la tabla y devuelve su posicion
 int declarar(char* var)
 {
-	if(VARCOUNT < 128)
+	if(VARCOUNT < MAXVAR)
 	{
 		VAR aux;
 		aux.nombre = var;
 		TV[VARCOUNT] = aux;
 		VARCOUNT++;
+		printf("Declara %s\n", var);
 		return VARCOUNT-1;
 	}
 	yyerror("max variables");
@@ -117,7 +119,7 @@ listaSentencias:
 		;
 
 sentencia:
-		ID ASIGNACION expresion PUNTOYCOMA {printf("Asigna %d a %s\n", $<num>3, $<str>1); asignar($<str>1, $<num>3);}
+		ID ASIGNACION expresion PUNTOYCOMA {asignar($<str>1, $<num>3); printf("Asigna %d a %s\n", $<num>3, $<str>1);}
 		|
 		LEER PARENIZQ listaIdentificadores PARENDER PUNTOYCOMA {printf("Lee %s\n", $<str>3);}
 		|

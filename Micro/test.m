@@ -1,5 +1,5 @@
 inicio
-num1 := 8;
-num2 := 5;
-escribir(num1 - 2, num2);
+var := 3 + 4 + 5;
+leer(var, var2);
+escribir(var);
 fin

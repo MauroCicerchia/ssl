@@ -1,5 +1,9 @@
 inicio
-var := 3 + 4 + 5;
-leer(var, var2);
-escribir(var);
+
+t := 4;
+a := 2;
+a := a + 1;
+
+escribir(t + a);
+
 fin

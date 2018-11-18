@@ -98,13 +98,31 @@ void yyerror(const char *str)
 
 int main(int argc, char *argv[])
 {
-		FILE *in = fopen(argv[1], "r");
-		if(in)
-		{
-			yyin = in;
-		}
-        yyparse();
-        return 0;
+	if(argc == 1)
+	{	
+ 		printf("Debe ingresar el nombre del archivo fuente (en lenguaje Micro) en la linea de comandos\n");
+ 		return -1;
+	}
+	if(argc != 2)
+	{
+ 		printf("Numero incorrecto de argumentos\n");
+ 		return -1;
+	}
+	int l = strlen(argv[1]);
+	if(argv[1][l-1] != 'm' || argv[1][l-2] != '.')
+	{
+		printf("Nombre incorrecto del Archivo Fuente\n");
+ 		return -1;
+	}
+	FILE *in = fopen(argv[1], "r");
+	if(in == NULL)
+	{
+		printf("No se pudo abrir el archivo\n");
+		return -1;
+	}
+	yyin = in;
+    yyparse();
+	return 0;
 } 
 
 //Asigna valor a una variable
@@ -158,7 +176,7 @@ int declarar(char* var)
 
 
 /* Line 189 of yacc.c  */
-#line 162 "y.tab.c"
+#line 180 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -227,7 +245,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 94 "micro.y.c"
+#line 112 "micro.y.c"
 
     int num;
     char *str;
@@ -235,7 +253,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 239 "y.tab.c"
+#line 257 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -247,7 +265,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 251 "y.tab.c"
+#line 269 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -537,8 +555,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   108,   108,   112,   116,   118,   122,   124,   126,   130,
-     132,   136,   138,   142,   144,   148,   150,   152,   156,   158
+       0,   126,   126,   130,   134,   136,   140,   142,   144,   148,
+     150,   154,   156,   160,   162,   166,   168,   170,   174,   176
 };
 #endif
 
@@ -1456,119 +1474,119 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 108 "micro.y.c"
+#line 126 "micro.y.c"
     {return 0;}
     break;
 
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 112 "micro.y.c"
+#line 130 "micro.y.c"
     {printf("Fin de Programa\n\n");}
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 122 "micro.y.c"
+#line 140 "micro.y.c"
     {asignar((yyvsp[(1) - (4)].str), (yyvsp[(3) - (4)].num)); printf("Asigna %d a %s\n", (yyvsp[(3) - (4)].num), (yyvsp[(1) - (4)].str));}
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 124 "micro.y.c"
+#line 142 "micro.y.c"
     {printf("Lee %s\n", (yyvsp[(3) - (5)].str));}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 126 "micro.y.c"
+#line 144 "micro.y.c"
     {printf("Escribe %s\n", (yyvsp[(3) - (5)].str));}
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 130 "micro.y.c"
+#line 148 "micro.y.c"
     {(yyval.str) = (yyvsp[(1) - (1)].str);}
     break;
 
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 132 "micro.y.c"
+#line 150 "micro.y.c"
     {char aux[100]; strcpy(aux, (yyvsp[(1) - (3)].str)); strcat(aux, ", "); strcat(aux, (yyvsp[(3) - (3)].str)); (yyval.str) = strdup(aux);}
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 136 "micro.y.c"
+#line 154 "micro.y.c"
     {char aux[100]; (yyval.str) = strdup(itoa((yyvsp[(1) - (1)].num), aux, 10));}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 138 "micro.y.c"
+#line 156 "micro.y.c"
     {char aux[100]; itoa((yyvsp[(1) - (3)].num), aux, 10); strcat(aux, ", "); strcat(aux, (yyvsp[(3) - (3)].str)); (yyval.str) = strdup(aux);}
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 142 "micro.y.c"
+#line 160 "micro.y.c"
     {(yyval.num) = (yyvsp[(1) - (1)].num);}
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 144 "micro.y.c"
+#line 162 "micro.y.c"
     {(yyval.num) = (yyvsp[(1) - (3)].num) + (yyvsp[(2) - (3)].num) * (yyvsp[(3) - (3)].num);}
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 148 "micro.y.c"
+#line 166 "micro.y.c"
     {(yyval.num) = valor((yyvsp[(1) - (1)].str));}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 150 "micro.y.c"
+#line 168 "micro.y.c"
     {(yyval.num) = (yyvsp[(1) - (1)].num);}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 152 "micro.y.c"
+#line 170 "micro.y.c"
     {(yyval.num) = (yyvsp[(2) - (3)].num);}
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 156 "micro.y.c"
+#line 174 "micro.y.c"
     {(yyval.num) = 1;}
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 158 "micro.y.c"
+#line 176 "micro.y.c"
     {(yyval.num) = -1;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1572 "y.tab.c"
+#line 1590 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

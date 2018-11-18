@@ -27,13 +27,31 @@ void yyerror(const char *str)
 
 int main(int argc, char *argv[])
 {
-		FILE *in = fopen(argv[1], "r");
-		if(in)
-		{
-			yyin = in;
-		}
-        yyparse();
-        return 0;
+	if(argc == 1)
+	{	
+ 		printf("Debe ingresar el nombre del archivo fuente (en lenguaje Micro) en la linea de comandos\n");
+ 		return -1;
+	}
+	if(argc != 2)
+	{
+ 		printf("Numero incorrecto de argumentos\n");
+ 		return -1;
+	}
+	int l = strlen(argv[1]);
+	if(argv[1][l-1] != 'm' || argv[1][l-2] != '.')
+	{
+		printf("Nombre incorrecto del Archivo Fuente\n");
+ 		return -1;
+	}
+	FILE *in = fopen(argv[1], "r");
+	if(in == NULL)
+	{
+		printf("No se pudo abrir el archivo\n");
+		return -1;
+	}
+	yyin = in;
+    yyparse();
+	return 0;
 } 
 
 //Asigna valor a una variable
